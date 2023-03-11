@@ -1,0 +1,28 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "description": "''\u001b[\u001b[C",
+  "main": "app.js",
+  "scripts": {
+    "lint": "npx eslint .",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "\u001b[3;2~https://github.com/G-lana/express-mesto-gha.git"
+  },
+  "author": "Galkina Svetlana",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "eslint": "^8.35.0",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.1"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.21"
+  }
+}
