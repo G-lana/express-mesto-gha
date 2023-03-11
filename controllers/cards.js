@@ -11,12 +11,30 @@ module.exports.createCard = (req, res) => {
   const ownerId = req.user._id;
   Card.create({ name, link, owner: ownerId })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res.status(400).send({
+          message: "Переданы некорректные данные в методы создания карточки",
+        });
+      }
+    });
 };
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+  Card.findByIdAndDelete(req.params.cardId)
+    .then((card) => {
+      if (card === null) {
+        res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
+        return;
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        res.status(400).send({
+          message: `Не удалось удалить карточку с id - ${req.params.cardId}`,
+        });
+      }
+    });
 };
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
@@ -24,8 +42,20 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .then((card) => {
+      if (card === null) {
+        res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
+        return;
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        res.status(400).send({
+          message: " Переданы некорректные данные для постановки лайка. ",
+        });
+      }
+    });
 };
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
@@ -33,6 +63,18 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .then((card) => {
+      if (card === null) {
+        res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
+        return;
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        res.status(400).send({
+          message: " Переданы некорректные данные для снятия лайка. ",
+        });
+      }
+    });
 };

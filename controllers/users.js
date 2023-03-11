@@ -6,26 +6,65 @@ module.exports.getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
 };
 module.exports.getCurrentUser = (req, res) => {
-  User.findById(req.user._id)
+  User.findById(req.params.userId)
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === "CastError") {
+        res.status(404).send({
+          message: `Не удалось найти пользователя с id - ${req.params.userId}`,
+        });
+      }
+    });
 };
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res.status(400).send({
+          message:
+            "Переданы некорректные данные в методы создания пользователя",
+        });
+      }
+    });
 };
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-  const { user } = { name, about };
-  User.findByIdAndUpdate(req.user._id, user)
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    {
+      new: true,
+      runValidators: true,
+    }
+  )
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res.status(400).send({
+          message: "Переданы некорректные данные в методы обновления профиля",
+        });
+      }
+    });
 };
 module.exports.updateAvatar = (req, res) => {
+  const userId = req.user._id;
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, avatar)
+  User.findByIdAndUpdate(
+    userId,
+    { avatar },
+    {
+      new: true,
+      runValidators: true,
+    }
+  )
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res.status(400).send({
+          message: "Переданы некорректные данные в методы обновления аватара",
+        });
+      }
+    });
 };
