@@ -22,7 +22,7 @@ module.exports.getCurrentUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(STATUS_BAD_REQUEST).send({
           message: `Не удалось найти пользователя с id - ${req.params.userId}`,
         });
