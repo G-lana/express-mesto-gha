@@ -1,24 +1,33 @@
-const User = require("../models/user.js");
+const User = require('../models/user');
+const {
+  STATUS_BAD_REQUEST,
+  STATUS_NOT_FOUND,
+  STATUS_INTERNAL_SERVER_ERROR,
+} = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch(() => res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 module.exports.getCurrentUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
-        res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
+        res
+          .status(STATUS_NOT_FOUND)
+          .send({ message: 'Запрашиваемый ресурс не найден' });
         return;
       }
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(400).send({
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_BAD_REQUEST).send({
           message: `Не удалось найти пользователя с id - ${req.params.userId}`,
         });
+      } else {
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -27,11 +36,13 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(400).send({
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_BAD_REQUEST).send({
           message:
-            "Переданы некорректные данные в методы создания пользователя",
+            'Переданы некорректные данные в методы создания пользователя',
         });
+      } else {
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -43,14 +54,16 @@ module.exports.updateProfile = (req, res) => {
     {
       new: true,
       runValidators: true,
-    }
+    },
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(400).send({
-          message: "Переданы некорректные данные в методы обновления профиля",
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_BAD_REQUEST).send({
+          message: 'Переданы некорректные данные в методы обновления профиля',
         });
+      } else {
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -63,14 +76,16 @@ module.exports.updateAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-    }
+    },
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(400).send({
-          message: "Переданы некорректные данные в методы обновления аватара",
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_BAD_REQUEST).send({
+          message: 'Переданы некорректные данные в методы обновления аватара',
         });
+      } else {
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
