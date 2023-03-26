@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   STATUS_BAD_REQUEST,
@@ -31,9 +33,30 @@ module.exports.getCurrentUser = (req, res) => {
       }
     });
 };
+module.exports.getUsers = (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const user = User.findById(userId);
+    if (!user) {
+              res
+          .status(STATUS_NOT_FOUND)
+          .send({ message: 'Запрашиваемый ресурс не найден' });
+        return;
+    }
+
+    res.send(user);
+  } catch (err) {
+    next(err);
+  }
+}
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const {
+    name, about, avatar, email,
+  } = req.body;
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -87,5 +110,21 @@ module.exports.updateAvatar = (req, res) => {
       } else {
         res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
+    });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.cookie('token', token);
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
     });
 };

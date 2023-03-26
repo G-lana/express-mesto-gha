@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const {
   STATUS_BAD_REQUEST,
+  STATUS_FORBIDDEN_ERROR,
   STATUS_NOT_FOUND,
   STATUS_INTERNAL_SERVER_ERROR,
 } = require('../utils/constants');
@@ -34,6 +35,14 @@ module.exports.deleteCard = (req, res) => {
         res
           .status(STATUS_NOT_FOUND)
           .send({ message: 'Запрашиваемый ресурс не найден' });
+        return;
+      }
+      const ownerId = card.owner.id;
+      const userId = req.user._id;
+      if (ownerId !== userId) {
+        res
+          .status(STATUS_FORBIDDEN_ERROR)
+          .send({ message: 'Нельзя удалить чужую карточку' });
         return;
       }
       res.send({ data: card });
