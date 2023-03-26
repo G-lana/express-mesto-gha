@@ -2,8 +2,8 @@ const routesUsers = require('express').Router();
 const auth = require('../middlewares/auth')
 const {
   getUsers,
+  getSpecialUser,
   getCurrentUser,
-  getUser,
   createUser,
   updateProfile,
   updateAvatar,
@@ -16,8 +16,8 @@ routesUsers.post('/signup', createUser);
 routesUsers.use(auth);
 
 routesUsers.get('/', getUsers);
-routesUsers.get('/me', getUser)
-routesUsers.get('/:userId', getCurrentUser);
+routesUsers.get('/me', getCurrentUser)
+routesUsers.get('/:userId', getSpecialUser);
 routesUsers.patch('/me', updateProfile);
 routesUsers.patch('/me/avatar', updateAvatar);
 

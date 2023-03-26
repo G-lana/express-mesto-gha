@@ -12,7 +12,7 @@ module.exports.getUsers = (req, res) => {
     .then((users) => res.send({ data: users }))
     .catch(() => res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getSpecialUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
@@ -33,7 +33,7 @@ module.exports.getCurrentUser = (req, res) => {
       }
     });
 };
-module.exports.getUsers = (req, res, next) => {
+module.exports.getCurrentUser = (req, res, next) => {
   try {
     const userId = req.user._id;
     const user = User.findById(userId);
