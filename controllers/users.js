@@ -34,20 +34,26 @@ module.exports.getSpecialUser = (req, res) => {
     });
 };
 module.exports.getCurrentUser = (req, res, next) => {
-  try {
-    const userId = req.user._id;
-    const user = User.findById(userId);
-    if (!user) {
-              res
+     const userId = req.user._id;
+     User.findById(userId)
+    .then((user) => {
+      if (user === null) {
+        res
           .status(STATUS_NOT_FOUND)
           .send({ message: 'Запрашиваемый ресурс не найден' });
         return;
-    }
-
-    res.send(user);
-  } catch (err) {
-    next(err);
-  }
+      }
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(STATUS_BAD_REQUEST).send({
+          message: `Не удалось найти пользователя с id - ${req.params.userId}`,
+        });
+      } else {
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 }
 module.exports.createUser = (req, res) => {
   const {
@@ -116,7 +122,7 @@ module.exports.updateAvatar = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  return User.findUserByCredentials( email, password )
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.cookie('token', token);
@@ -128,3 +134,4 @@ module.exports.login = (req, res) => {
         .send({ message: err.message });
     });
 };
+

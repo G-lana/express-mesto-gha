@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routesUsers = require('./routes/users');
 const routesCards = require('./routes/cards');
+const { login, createUser } = require('./controllers/users')
 const { STATUS_NOT_FOUND } = require('./utils/constants');
 
 const { PORT = 3000 } = process.env;
@@ -12,6 +13,8 @@ const DATABASE_URL = 'mongodb://127.0.0.1:27017/mestodb';
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.post('/signup', createUser);
+app.post('/signin', login);
 app.use('/users', routesUsers);
 app.use('/cards', routesCards);
 

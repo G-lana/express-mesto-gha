@@ -10,9 +10,6 @@ const {
   login,
 } = require('../controllers/users');
 
-routesUsers.post('/signin', login);
-routesUsers.post('/signup', createUser);
-
 routesUsers.use(auth);
 
 routesUsers.get('/', getUsers);
