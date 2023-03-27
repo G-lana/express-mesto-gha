@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routesUsers = require('./routes/users');
 const routesCards = require('./routes/cards');
-const auth = require('../middlewares/auth');
+const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users')
 const { STATUS_NOT_FOUND } = require('./utils/constants');
 
