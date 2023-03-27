@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routesUsers = require('./routes/users');
 const routesCards = require('./routes/cards');
+const auth = require('../middlewares/auth');
 const { login, createUser } = require('./controllers/users')
 const { STATUS_NOT_FOUND } = require('./utils/constants');
 
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/signup', createUser);
 app.post('/signin', login);
+app.use(auth);
 app.use('/users', routesUsers);
 app.use('/cards', routesCards);
 
