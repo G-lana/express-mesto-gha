@@ -25,6 +25,7 @@
     "mongoose": "^7.0.1",
     "pnpm": "^8.0.0",
     "simple-git": "^3.17.0",
+    "url-regex-safe": "^3.0.0",
     "validator": "^13.9.0"
   },
   "devDependencies": {
