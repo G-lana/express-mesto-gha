@@ -7,13 +7,12 @@ const bodyParser = require('body-parser');
 const routesUsers = require('./routes/users');
 const routesCards = require('./routes/cards');
 const auth = require('./middlewares/auth');
-const { login, createUser } = require('./controllers/users')
-const { STATUS_INTERNAL_SERVER_ERROR, STATUS_NOT_FOUND  } = require('./utils/constants');
-const { validateLogin, validateCreateUser } = require('./middlewares/validation')
+const { login, createUser } = require('./controllers/users');
+const { STATUS_INTERNAL_SERVER_ERROR, STATUS_NOT_FOUND } = require('./utils/constants');
+const { validateLogin, validateCreateUser } = require('./middlewares/validation');
 
 const { PORT = 3000 } = process.env;
 const DATABASE_URL = 'mongodb://127.0.0.1:27017/mestodb';
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

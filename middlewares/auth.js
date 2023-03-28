@@ -4,7 +4,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 module.exports = (req, res, next) => {
   const token = req.headers.cookie.replace('token=', '');
   if (token == null) {
-
+    return next(new UnauthorizedError('Необходима авторизация'));
   } let payload;
   try {
     payload = jwt.verify(token, 'some-secret-key');
@@ -13,6 +13,5 @@ module.exports = (req, res, next) => {
     return next(new UnauthorizedError('Необходима авторизация'));
   }
   req.user = payload;
-  console.log(req.user)
   return next();
-}
+};

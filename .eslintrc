@@ -1,11 +1,6 @@
 {
   "extends": "airbnb-base",
   "rules": {
-    "linebreak-style": [
-      "error",
-      "unix",
-      "windows"
-    ],
     "no-console": "off",
     "no-underscore-dangle": [
       "error",

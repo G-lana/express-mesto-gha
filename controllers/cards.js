@@ -3,7 +3,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
@@ -39,8 +39,8 @@ module.exports.deleteCard = (req, res, next) => {
       }
 
       return Card.findByIdAndRemove(cardId)
-        .then((card) => {
-          res.send({ data: card });
+        .then((myCard) => {
+          res.send({ data: myCard });
         })
         .catch((err) => {
           next(err);
@@ -60,18 +60,18 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-  .then((card) => {
-    if (!card) {
-      throw new NotFoundError('Карточка не найдена');
-    }
-    res.send({ data: card });
-  })
-  .catch((err) => {
-    if (err.name === 'CastError') {
-      return next(new ValidationError('Некорректный id карточки'));
-    }
-    return next(err);
-  });
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточка не найдена');
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new ValidationError('Некорректный id карточки'));
+      }
+      return next(err);
+    });
 };
 module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
@@ -79,16 +79,16 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-  .then((card) => {
-    if (!card) {
-      throw new NotFoundError('Карточка не найдена');
-    }
-    res.send({ data: card });
-  })
-  .catch((err) => {
-    if (err.name === 'CastError') {
-      return next(new ValidationError('Некорректный id карточки'));
-    }
-    return next(err);
-  });
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточка не найдена');
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new ValidationError('Некорректный id карточки'));
+      }
+      return next(err);
+    });
 };
