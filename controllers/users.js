@@ -122,6 +122,7 @@ module.exports.login = (req, res, next) => {
       if (!user) {
         throw new UnauthorizedError('Неправильные логин или пароль');
       }
+
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
@@ -134,6 +135,7 @@ module.exports.login = (req, res, next) => {
               httpOnly: true,
               sameSite: true,
             });
+
           res.send({
             _id: user._id,
             name: user.name,

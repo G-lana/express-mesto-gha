@@ -28,8 +28,8 @@ mongoose
     console.error(err);
   });
 
-app.post('/signin', validateLogin, login);
 app.post('/signup', validateCreateUser, createUser);
+app.post('/signin', validateLogin, login);
 
 app.use(auth);
 

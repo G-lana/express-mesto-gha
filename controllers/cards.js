@@ -25,23 +25,32 @@ module.exports.createCard = (req, res, next) => {
       return next(err);
     });
 };
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
+module.exports.deleteCard = (req, res, next) => {
+  const { cardId } = req.params;
+
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
       }
-      const ownerId = card.owner.id;
-      const userId = req.user._id;
-      if (ownerId !== userId) {
-        throw new ForbiddenError('Удаление чужой карточки');
+
+      if (card.owner.toString() !== req.user._id) {
+        throw new ForbiddenError('Удаление чужой карточки запрещено');
       }
-      res.send({ data: card });
+
+      return Card.findByIdAndRemove(cardId)
+        .then((card) => {
+          res.send({ data: card });
+        })
+        .catch((err) => {
+          next(err);
+        });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new ValidationError('Некорректный id карточки'));
       }
+
       return next(err);
     });
 };
